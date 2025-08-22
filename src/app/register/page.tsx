@@ -56,7 +56,6 @@ export default function RegisterPage() {
 
     return (
         <div className="h-full">
-            {isLoading && <Loading />}
             <Navbar style={{ position: "fixed", top: 0 }} />
             <main className="h-full w-full items-center flex flex-1 justify-center">
                 <div className="bg-[#1f2f5d] border-[2px] border-[#fff] pt-10 pl-5 pr-5 pb-10 rounded-[10px] flex flex-col gap-2.5 items-center w-[90%] md:w-[30%]">

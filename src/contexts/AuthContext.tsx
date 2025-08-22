@@ -14,6 +14,7 @@ interface AuthContextType {
   screenMsg: ScreenMessageProps | null;
   setScreenMsg: (msg: ScreenMessageProps | null) => void;
   setIsLoading: (state: boolean) => void;
+  setUser: (user: UserType | null) => void;
   login: (data: { email: string; password: string; }) => void;
   register: (data: { email: string; password: string; username: string }) => void;
   logout: () => void;
@@ -52,10 +53,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (result?.token) {
-        saveToken(result.token);
+        saveToken(result.token, result?.user?.id);
       }
 
+      setUser(result.user);
       router.push('/dashboard');
+
     } catch (error) {
       console.error('Falha na requisição:', error);
       mySetScreenMessage({
@@ -69,6 +72,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   async function register(data: { email: string; password: string; username: string }) {
 
     try {
+      setIsLoading(true)
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -80,7 +84,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         }),
       });
 
-      const result = res.json();
+      // const result = res.json();
 
       if (res.ok) {
         router.push('/login');
@@ -95,16 +99,18 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         })
       }
 
+      setIsLoading(false)
 
     } catch (error) {
+      setIsLoading(false)
       console.error(error)
     }
   }
 
 
   function logout() {
-    //setUser(null);
-    //clearToken();
+    setUser(null);
+    clearToken();
   }
 
   function mySetScreenMessage(info: ScreenMessageProps | null) {
@@ -115,7 +121,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading, setIsLoading, screenMsg, setScreenMsg: (info: ScreenMessageProps | null) => mySetScreenMessage(info) }}>
+    <AuthContext.Provider value={{ user, login, register, logout, isLoading, setIsLoading, screenMsg, setUser, setScreenMsg: (info: ScreenMessageProps | null) => mySetScreenMessage(info) }}>
       {screenMsg && <ScreenMessage type={screenMsg.type} message={screenMsg.message} />}
       {children}
     </AuthContext.Provider>

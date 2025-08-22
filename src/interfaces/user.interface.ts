@@ -5,6 +5,7 @@ interface UserType {
     createdAt?: string
     hasDataClient: boolean
     dataLimit: number
+    dev_coins: number
 }
 
 export default UserType;

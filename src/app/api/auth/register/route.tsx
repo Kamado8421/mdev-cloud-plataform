@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
 import { NEXT_PUBLIC_SECRET_KEY } from "@src/constants/tokens";
+import { validateAuthCode } from "@src/utils/funcs";
 
 const prisma = new PrismaClient();
 
@@ -12,9 +13,6 @@ interface CreateuserReqProps {
   auth_code: string;
 }
 
-function validateAuthCode(auth_code: string) {
-  return NEXT_PUBLIC_SECRET_KEY === auth_code;
-}
 
 export async function POST(req: NextRequest) {
   try {

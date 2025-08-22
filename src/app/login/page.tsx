@@ -7,7 +7,7 @@ import { useAuth } from "@src/contexts/AuthContext";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
-    const { setIsLoading, isLoading, login, user, screenMsg, setScreenMsg } = useAuth();
+    const { setIsLoading, isLoading, login, user, setScreenMsg } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -31,7 +31,6 @@ export default function LoginPage() {
 
     return (
         <div className="h-full">
-            {isLoading && <Loading />}
             <Navbar style={{ position: 'fixed', top: 0 }} />
             <main className="h-full w-full items-center flex flex-1 justify-center">
                 <div className="bg-[#1f2f5d] border-[2px] border-[#fff] pt-10 pl-5 pr-5 pb-10 rounded-[10px] flex flex-col gap-2.5 items-center w-[90%] md:w-[30%]">

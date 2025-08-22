@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Logo from '@src/assets/logo.svg';
 import { BotIcon, LogOutIcon, MenuIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useAuth } from "@src/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 
@@ -62,7 +62,7 @@ function NavbarContentIndex() {
 function NavbarContentDashboard() {
   const [mobileScreen, setMobileScreen] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -90,7 +90,7 @@ function NavbarContentDashboard() {
           <a className="hover:text-[#b603ff] flex items-center gap-1" href="#">
             <BotIcon /> <span>Suporte</span>
           </a>
-          <span className="font-bold"><span className="tag">$0</span> Dev-Coins</span>
+          <span className="font-bold"><span className="tag">${user?.dev_coins}</span> Dev-Coins</span>
           <button onClick={handleLogout} className="tag-hover"><LogOutIcon /></button>
         </>
       )}
@@ -113,12 +113,13 @@ function NavbarContentDashboard() {
             <button onClick={() => setShowMenu(false)} className="self-end text-gray-400 hover:text-white">
               ✕
             </button>
+            <span className="font-semibold">Olá, {user?.username.split(' ')[0]} ☺️</span>
             <a className="hover:text-[#b603ff]" href="#">API - Documentação</a>
             <a className="hover:text-[#b603ff] flex items-center gap-1" href="#">
               <BotIcon /> <span>Suporte</span>
             </a>
             <span className="font-bold"><span className="tag">$0</span> Dev-Coins</span>
-            <button onClick={handleLogout} className="tag-hover"><LogOutIcon /></button>
+            <button onClick={handleLogout} className="tag-hover flex gap-2 text-[#b603ff]"><LogOutIcon /> Sair</button>
           </div>
         </div>
       )}

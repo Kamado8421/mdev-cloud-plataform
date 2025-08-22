@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET_KEY, NEXT_PUBLIC_SECRET_KEY } from "@src/constants/tokens";
+import { validateAuthCode } from "@src/utils/funcs";
 
 const prisma = new PrismaClient();
 
@@ -13,9 +14,6 @@ interface LoginReqProps {
 }
 
 
-function validateAuthCode(auth_code: string) {
-  return NEXT_PUBLIC_SECRET_KEY === auth_code;
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -53,7 +51,7 @@ export async function POST(req: NextRequest) {
     const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
 
     // 5. retorna usuário (sem senha)
-    const { password: _, ...userWithoutPassword } = existingUser;
+    const { password: undefined, ...userWithoutPassword } = existingUser;
 
     return Response.json(
       {
