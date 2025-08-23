@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
 
-    const { user, setIsLoading, setUser , setScreenMsg} = useAuth();
+    const { user, setIsLoading, setUser, setScreenMsg } = useAuth();
     const [clientsDB, setClientsDB] = useState<DataClientType[]>([]);
 
     const router = useRouter();
@@ -41,7 +41,7 @@ export default function DashboardPage() {
 
                 const result = await res.json();
 
-                if(res.ok){
+                if (res.ok) {
                     setUser(result?.user);
                 } else {
                     setIsLoading(false)
@@ -61,20 +61,64 @@ export default function DashboardPage() {
 
         setIsLoading(true);
         const fetchDataClients = async () => {
-            //const data = await getDataClients();
-            //setClientsDB(data);
-            setClientsDB([
+
+            const data = user?.hasDataClient ? [
                 { id: "1", jid: "jid1", name: "User One", isPremium: true, isWoner: true, isBaned: false, level: "5", xp: 1500, money: 100, createdAt: "2023-10-01T12:00:00Z", idDataWorner: "owner1" },
                 { id: "2", jid: "jid2", name: "User One", isPremium: true, isWoner: true, isBaned: false, level: "5", xp: 1500, money: 100, createdAt: "2023-10-01T12:00:00Z", idDataWorner: "owner1" },
                 { id: "3", jid: "jid3sssssssssssssss", name: "User One", isPremium: true, isWoner: true, isBaned: false, level: "5", xp: 1500, money: 100, createdAt: "2023-10-01T12:00:00Z", idDataWorner: "owner1" },
                 { id: "4", jid: "jdid3", name: "User One", isPremium: true, isWoner: true, isBaned: false, level: "5", xp: 1500, money: 100, createdAt: "2023-10-01T12:00:00Z", idDataWorner: "owner1" },
-            ])
+            ] : []
+
+            setClientsDB(data);
         }
 
         getUser();
-        fetchDataClients();
+
+        if (user) {
+            fetchDataClients();
+        }
 
     }, []);
+
+
+    async function createClound() {
+        if (user?.hasDataClient) return setScreenMsg({
+            type: 'warning',
+            message: 'Essa ação já foi realizada. Por favor, atualize a página.'
+        })
+
+        setIsLoading(true)
+
+        const res = await fetch('/api/data-cloud/plataform', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: user?.id,
+                auth_code: NEXT_PUBLIC_SECRET_KEY
+            }),
+        })
+
+        if (res.ok) {
+            setScreenMsg({
+                type: 'success',
+                message: 'Banco de dados criado com sucesso!!'
+            })
+
+            if (user) {
+                const { hasDataClient, ...rest } = user;
+                setUser({ ...rest, hasDataClient: true });
+            }
+        } else {
+            setScreenMsg({
+                type: 'error',
+                message: 'Ocorreu algum erro interno ao solicitar esse serviço!'
+            })
+        }
+
+        setIsLoading(false);
+    }
 
     return (
         <div>
@@ -82,17 +126,17 @@ export default function DashboardPage() {
 
             <main className=" p-5 md:p-10 flex flex-col md:items-start items-center h-full w-full">
                 <h1 className="text-white text-4xl font-bold">Banco de Dados</h1>
-                {user?.hasDataClient && <div>
+                {!user?.hasDataClient && <div>
                     <p className="text-white mt-5 md:text-left text-center md:text-[18px] text-[16px]">Clique abaixo para começar a usar seu banco de dados. Será liberado um limite de<br className="md:flex hidden" />registros gratuitos para você.</p>
                     <Button
                         tailwind="mt-5"
                         gradient
-                        onClick={() => { }}
+                        onClick={createClound}
                         title="Criar seu Banco de Dados"
                     />
                 </div>}
 
-                {!user?.hasDataClient ? (<div className="w-full scroll">
+                {user?.hasDataClient ? (<div className="w-full scroll">
                     <div className="flex gap-5 flex-col md:w-[35%]">
                         <div className="w-full flex justify-between text-white font-semibold mt-10">
                             <span>Seu limite</span>
