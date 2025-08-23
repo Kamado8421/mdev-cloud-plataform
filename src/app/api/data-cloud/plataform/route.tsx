@@ -34,3 +34,5 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Erro interno no servidor" }, { status: 500 });
 }
 }
+
+

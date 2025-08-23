@@ -6,8 +6,6 @@ import Navbar from "@src/components/navbar";
 import DataClientType from "@src/interfaces/data-clients.interface";
 import { NEXT_PUBLIC_SECRET_KEY } from "@src/constants/tokens";
 import { useAuth } from "@src/contexts/AuthContext";
-import { getUserId } from "@src/services/jwt.service";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 export default function DashboardPage() {
@@ -15,23 +13,13 @@ export default function DashboardPage() {
     const { user, setIsLoading, setUser, setScreenMsg } = useAuth();
     const [clientsDB, setClientsDB] = useState<DataClientType[]>([]);
 
-    const router = useRouter();
-
-    setUser({
-        dataLimit: 200,
-        dev_coins: 1000,
-        email: 'teste@gmail.com',
-        hasDataClient: false,
-        id: 'teste',
-        username: 'Test User',
-        createdAt: 'ontem'
-    })
-
     async function createClound() {
         if (user?.hasDataClient) return setScreenMsg({
             type: 'warning',
             message: 'Essa ação já foi realizada. Por favor, atualize a página.'
         })
+
+        console.log(user)
 
         setIsLoading(true)
 

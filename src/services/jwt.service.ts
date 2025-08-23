@@ -14,6 +14,9 @@ export function getToken(): string | null {
       localStorage.removeItem("auth_token"); // expirada
       return null;
     }
+
+    console.log(data)
+
     return data.token;
   } catch {
     return null; // se der erro no parse

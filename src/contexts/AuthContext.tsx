@@ -97,7 +97,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         mySetScreenMessage({
           type: 'error',
-          message: 'Login inválido'
+          message: 'Já há um usuário com esse e-mail.'
         })
       }
 
