@@ -77,6 +77,127 @@ export async function POST(req: NextRequest) {
   }
 }
 
+type UpdateKeysBodyProps = {
+  jid: string;
+  db_key: string;
+  updates: {
+    username?: string;
+    isPremium?: boolean | string;
+    isBaned?: boolean | string;
+    level?: string | number;
+    xp?: number | string;
+    money?: number | string;
+    name?: string;
+  }
+};
+
+export async function PUT(req: NextRequest) {
+  try {
+    const body: UpdateKeysBodyProps = await req.json();
+    const { jid, db_key } = body;
+
+    console.log(body)
+
+    if (!db_key) {
+      return Response.json({ error: "DB-Key Obrigatório" }, { status: 401 });
+    }
+
+    const isValidated = await validateDBKey(db_key);
+    if (!isValidated) {
+      return Response.json({ error: "DB-Key inválido" }, { status: 401 });
+    }
+
+    if (!jid) {
+      return Response.json({ error: "jid Obrigatório" }, { status: 401 });
+    }
+
+    const existing = await prisma.dataClient.findUnique({ where: { jid } });
+    if (!existing) {
+      return Response.json({ error: "Cliente não encontrado" }, { status: 404 });
+    }
+
+    // Campos permitidos para atualização
+    const allowedFields = [
+      "isPremium",
+      "isBaned",
+      "level",
+      "xp",
+      "money",
+      "name",
+      "username"
+    ];
+
+    // Tipar como Record<string, any> para permitir atribuições dinâmicas
+    const data: Record<string, any> = {};
+    const updates = body.updates;
+
+    for (const key of allowedFields) {
+      if (updates.hasOwnProperty(key)) {
+        let value = updates[key as keyof UpdateKeysBodyProps['updates']];
+
+        switch (key) {
+          case "isPremium":
+            data[key] =
+              typeof value === 'string'
+                ? value.toLowerCase() === 'true'
+                : Boolean(value);
+          case "isBaned":
+            data[key] =
+              typeof value === 'string'
+                ? value.toLowerCase() === 'true'
+                : Boolean(value);
+          case "xp":
+            const xp = Number(value);
+            if (!isNaN(xp)) data.xp = xp;
+            break;
+
+          case "money":
+            const money = Number(value);
+            if (!isNaN(money)) data.money = money;
+            break;
+
+          case "level":
+            data.level = String(value);
+            break;
+
+          case "name":
+          case "username":
+            data.name = String(value);
+            break;
+        }
+      }
+    }
+
+    if (Object.keys(data).length === 0) {
+      return Response.json(
+        { error: "Nenhum campo válido fornecido para atualização." },
+        { status: 400 }
+      );
+    }
+
+    const updated = await prisma.dataClient.update({
+      where: { jid },
+      data,
+    });
+
+    const { userId, ...rest } = updated;
+    return Response.json(
+      {
+        success: true,
+        message: "Cliente atualizado com sucesso.",
+        client: rest,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return Response.json({ error: "Erro interno no servidor" }, { status: 500 });
+  }
+}
+
+
+
+
 export async function DELETE(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
@@ -108,3 +229,5 @@ export async function DELETE(req: NextRequest) {
     return Response.json({ error: 'Erro interno no servidor' }, { status: 500 });
   }
 }
+
+
