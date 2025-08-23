@@ -1,13 +1,11 @@
 'use client';
-
 import Button from "@src/components/button";
-import Loading from "@src/components/loading";
 import Navbar from "@src/components/navbar";
 import { useAuth } from "@src/contexts/AuthContext";
 import { useEffect, useState } from "react";
 
 export default function RegisterPage() {
-    const { setIsLoading, isLoading, register, setScreenMsg, user } = useAuth();
+    const { setIsLoading, register, setScreenMsg, user } = useAuth();
 
     // Estados para cada input
     const [username, setUsername] = useState("");

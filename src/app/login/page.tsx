@@ -1,13 +1,12 @@
 'use client';
 
 import Button from "@src/components/button";
-import Loading from "@src/components/loading";
 import Navbar from "@src/components/navbar";
 import { useAuth } from "@src/contexts/AuthContext";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
-    const { setIsLoading, isLoading, login, user, setScreenMsg } = useAuth();
+    const { setIsLoading, login, user, setScreenMsg } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

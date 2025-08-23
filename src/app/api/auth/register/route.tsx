@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
-import { NEXT_PUBLIC_SECRET_KEY } from "@src/constants/tokens";
 import { validateAuthCode } from "@src/utils/funcs";
 
 const prisma = new PrismaClient();

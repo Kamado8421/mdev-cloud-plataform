@@ -21,11 +21,12 @@ export async function GET(req: NextRequest) {
       const data = await prisma.dataClient.findUnique({ where: { jid } });
       if (!data) return Response.json({}, { status: 404 });
 
-      const { userId, ...rest } = data;
-      return Response.json(rest, { status: 200 });
+      //const { userId, ...rest } = data;
+      return Response.json({ ...data, userId: undefined }, { status: 200 });
     }
 
     const data = await prisma.dataClient.findMany({ where: { userId: db_key } });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const dataFormated = data.map(({ userId, ...rest }) => rest);
 
     return Response.json(dataFormated, { status: 200 });
@@ -69,8 +70,7 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    const { userId, ...rest } = data;
-    return Response.json(rest, { status: 201 });
+    return Response.json({...data, userId: undefined}, { status: 201 });
   } catch (error) {
     console.error(error);
     return Response.json({ error: 'Erro interno no servidor' }, { status: 500 });
@@ -133,10 +133,10 @@ export async function PUT(req: NextRequest) {
 
     for (const key of allowedFields) {
       if (updates.hasOwnProperty(key)) {
-        let value = updates[key as keyof UpdateKeysBodyProps['updates']];
+        const value = updates[key as keyof UpdateKeysBodyProps['updates']];
 
         switch (key) {
-          case "isPremium":
+          case "isPremium":     
             data[key] =
               typeof value === 'string'
                 ? value.toLowerCase() === 'true'
@@ -180,12 +180,11 @@ export async function PUT(req: NextRequest) {
       data,
     });
 
-    const { userId, ...rest } = updated;
     return Response.json(
       {
         success: true,
         message: "Cliente atualizado com sucesso.",
-        client: rest,
+        client: {...updated, userId: undefined},
       },
       { status: 200 }
     );

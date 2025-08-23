@@ -3,13 +3,12 @@
 import Button from "@src/components/button";
 import DataTable from "@src/components/data-table";
 import Navbar from "@src/components/navbar";
+import DataClientType from "@src/interfaces/data-clients.interface";
 import { NEXT_PUBLIC_SECRET_KEY } from "@src/constants/tokens";
 import { useAuth } from "@src/contexts/AuthContext";
-import DataClientType from "@src/interfaces/data-clients.interface";
-import { getDataClients } from "@src/services/gets.service";
-import { getToken, getUserId } from "@src/services/jwt.service";
+import { getUserId } from "@src/services/jwt.service";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function DashboardPage() {
 
@@ -18,68 +17,15 @@ export default function DashboardPage() {
 
     const router = useRouter();
 
-    useEffect(() => {
-        // if (!user) {
-        //     location.href = '/login';
-        // }
-
-        const getUser = async () => {
-            setIsLoading(true)
-            const id = getUserId();
-
-            if (id) {
-                const res = await fetch('/api/auth/users', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id,
-                        auth_code: NEXT_PUBLIC_SECRET_KEY,
-                    }),
-                })
-
-                const result = await res.json();
-
-                if (res.ok) {
-                    setUser(result?.user);
-                } else {
-                    setIsLoading(false)
-                    router.push('/login')
-                }
-            } else {
-                setScreenMsg({
-                    type: 'error',
-                    message: 'Acesso negado! Entre sua conta.'
-                })
-                router.push('/login')
-            }
-
-            setIsLoading(false)
-
-        }
-
-        setIsLoading(true);
-        const fetchDataClients = async () => {
-
-            const data = user?.hasDataClient ? [
-                { id: "1", jid: "jid1", name: "User One", isPremium: true, isWoner: true, isBaned: false, level: "5", xp: 1500, money: 100, createdAt: "2023-10-01T12:00:00Z", idDataWorner: "owner1" },
-                { id: "2", jid: "jid2", name: "User One", isPremium: true, isWoner: true, isBaned: false, level: "5", xp: 1500, money: 100, createdAt: "2023-10-01T12:00:00Z", idDataWorner: "owner1" },
-                { id: "3", jid: "jid3sssssssssssssss", name: "User One", isPremium: true, isWoner: true, isBaned: false, level: "5", xp: 1500, money: 100, createdAt: "2023-10-01T12:00:00Z", idDataWorner: "owner1" },
-                { id: "4", jid: "jdid3", name: "User One", isPremium: true, isWoner: true, isBaned: false, level: "5", xp: 1500, money: 100, createdAt: "2023-10-01T12:00:00Z", idDataWorner: "owner1" },
-            ] : []
-
-            setClientsDB(data);
-        }
-
-        getUser();
-
-        if (user) {
-            fetchDataClients();
-        }
-
-    }, []);
-
+    setUser({
+        dataLimit: 200,
+        dev_coins: 1000,
+        email: 'teste@gmail.com',
+        hasDataClient: false,
+        id: 'teste',
+        username: 'Test User',
+        createdAt: 'ontem'
+    })
 
     async function createClound() {
         if (user?.hasDataClient) return setScreenMsg({
@@ -107,8 +53,7 @@ export default function DashboardPage() {
             })
 
             if (user) {
-                const { hasDataClient, ...rest } = user;
-                setUser({ ...rest, hasDataClient: true });
+                setUser({ ...user, hasDataClient: true });
             }
         } else {
             setScreenMsg({

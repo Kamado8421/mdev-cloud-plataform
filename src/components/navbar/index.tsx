@@ -3,30 +3,30 @@
 import Image from "next/image";
 import Logo from '@src/assets/logo.svg';
 import { BotIcon, LogOutIcon, MenuIcon } from "lucide-react";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@src/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 
 type Props = {
-    content?: 'index' | 'dashboard',
-    style?: React.CSSProperties;
+  content?: 'index' | 'dashboard',
+  style?: React.CSSProperties;
 };
 
 function NavbarContentIndex() {
-    return (
-        <div className="flex items-center justify-between gap-[10px] text-[14px]">
-            <button
-                onClick={() => { location.href = '/register' }}
-                className="p-2 pl-5 pr-5 border-2 border-[#b603ff] rounded-md text-white click-point md:flex hidden">
-                CRIAR CONTA
-            </button>
-            <button
-                onClick={() => { location.href = '/login' }}
-                className="bg-tag p-2 pl-5 pr-5 rounded-md click-point">
-                ENTRAR
-            </button>
-        </div>
-    )
+  return (
+    <div className="flex items-center justify-between gap-[10px] text-[14px]">
+      <button
+        onClick={() => { location.href = '/register' }}
+        className="p-2 pl-5 pr-5 border-2 border-[#b603ff] rounded-md text-white click-point md:flex hidden">
+        CRIAR CONTA
+      </button>
+      <button
+        onClick={() => { location.href = '/login' }}
+        className="bg-tag p-2 pl-5 pr-5 rounded-md click-point">
+        ENTRAR
+      </button>
+    </div>
+  )
 }
 // function NavbarContentDashboard() {
 
@@ -82,11 +82,11 @@ function NavbarContentDashboard() {
 
   return (
     <div className="flex items-center justify-between gap-[10px] text-white flex-col-reverse md:flex-row">
-      
+
       {/* Itens normais para desktop */}
       {!mobileScreen && (
         <>
-          <a className="hover:text-[#b603ff]" href="#">API - Documentação</a>
+          <a className="hover:text-[#b603ff]" href="/docs">API - Documentação</a>
           <a className="hover:text-[#b603ff] flex items-center gap-1" href="#">
             <BotIcon /> <span>Suporte</span>
           </a>
@@ -114,7 +114,7 @@ function NavbarContentDashboard() {
               ✕
             </button>
             <span className="font-semibold">Olá, {user?.username.split(' ')[0]} ☺️</span>
-            <a className="hover:text-[#b603ff]" href="#">API - Documentação</a>
+            <a className="hover:text-[#b603ff]" href="/docs">API - Documentação</a>
             <a className="hover:text-[#b603ff] flex items-center gap-1" href="#">
               <BotIcon /> <span>Suporte</span>
             </a>
@@ -129,16 +129,16 @@ function NavbarContentDashboard() {
 
 
 export default function Navbar({ content, style }: Props) {
-    return (
-        <div style={style} className="flex items-center justify-between p-5">
-            <button onClick={() => location.href = content === 'dashboard' ? '/dashboard' : '/'} className="flex gap-2 items-center">
-                <Image src={Logo} alt="Logo" width={50} height={50} />
-                <h1 className="font-bold text-white text-1xl md:text-2xl">M'DEV SYSTEMS</h1>
-            </button>
+  return (
+    <div style={style} className="flex items-center justify-between p-5">
+      <button onClick={() => location.href = content === 'dashboard' ? '/dashboard' : '/'} className="flex gap-2 items-center">
+        <Image src={Logo} alt="Logo" width={50} height={50} />
+        <h1 className="font-bold text-white text-1xl md:text-2xl">M{"'"}DEV SYSTEMS</h1>
+      </button>
 
-            {content === 'index' && <NavbarContentIndex />}
-            {content === 'dashboard' && <NavbarContentDashboard />}
+      {content === 'index' && <NavbarContentIndex />}
+      {content === 'dashboard' && <NavbarContentDashboard />}
 
-        </div>
-    )
+    </div>
+  )
 }

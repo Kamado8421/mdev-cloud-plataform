@@ -7,6 +7,7 @@ import { saveToken, clearToken } from "@src/services/jwt.service";
 import { useRouter } from "next/navigation";
 import ScreenMessage from "@src/components/screen-message";
 import { createContext, useContext, useState, ReactNode } from "react";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface AuthContextType {
   user: UserType | null;
@@ -18,6 +19,7 @@ interface AuthContextType {
   login: (data: { email: string; password: string; }) => void;
   register: (data: { email: string; password: string; username: string }) => void;
   logout: () => void;
+  router: AppRouterInstance;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -121,7 +123,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading, setIsLoading, screenMsg, setUser, setScreenMsg: (info: ScreenMessageProps | null) => mySetScreenMessage(info) }}>
+    <AuthContext.Provider value={{ user, router, login, register, logout, isLoading, setIsLoading, screenMsg, setUser, setScreenMsg: (info: ScreenMessageProps | null) => mySetScreenMessage(info) }}>
       {screenMsg && <ScreenMessage type={screenMsg.type} message={screenMsg.message} />}
       {children}
     </AuthContext.Provider>
