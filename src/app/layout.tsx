@@ -31,7 +31,7 @@ export default function RootLayout({
 
 
   return (
-    <html lang="pt-br" className="h-full w-full my-bg">
+    <html lang="pt-br" className="min-h-full w-full my-bg h-auto">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased my-bg h-full w-full`}
       >

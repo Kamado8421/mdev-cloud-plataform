@@ -12,6 +12,17 @@ export default function DashboardPage() {
 
     const { user, setIsLoading, setUser, setScreenMsg } = useAuth();
     const [clientsDB, setClientsDB] = useState<DataClientType[]>([]);
+    const [actions, setActions] = useState(0);
+
+    async function getClientsDB() {
+        const url = `/api/data-cloud/clients?db_key=${user?.id}`
+        const res = await fetch(url);
+
+        if (res.ok) {
+            const clients = await res.json();
+            setClientsDB(clients);
+        }
+    }
 
     async function createClound() {
         if (user?.hasDataClient) return setScreenMsg({
@@ -53,6 +64,10 @@ export default function DashboardPage() {
         setIsLoading(false);
     }
 
+    useEffect(() => {
+        getClientsDB();
+    }, [user, actions])
+
     return (
         <div>
             <Navbar content="dashboard" />
@@ -92,7 +107,9 @@ export default function DashboardPage() {
                                 }} />
                         </div>
                     </div>
-                    <DataTable data={clientsDB} />
+                    <DataTable actionUpdate={() => {
+                        setActions(actions + 1);
+                    }} data={clientsDB} db_key={user.id}/>
                 </div>) : <div className="text-[#adadad] mt-10">Dados não encontrados. Por favor, se possui dados, atualize a página.</div>}
             </main>
         </div>

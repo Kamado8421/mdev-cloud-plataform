@@ -1,11 +1,24 @@
+'use client';
+
 import DataClientType from "@src/interfaces/data-clients.interface";
 import Button from "../button";
+import { useAuth } from "@src/contexts/AuthContext";
+import { useState } from "react";
+import UpdateClientForm from "../update-client-form";
 
 interface Props {
+    db_key: string;
     data: DataClientType[];
+    actionUpdate: () => void
 }
 
-export default function DataTable({ data }: Props) {
+export default function DataTable({ data, db_key, actionUpdate }: Props) {
+
+    const { setScreenMsg } = useAuth()
+    const [updateClient, setUpdateClient] = useState<DataClientType | null>(null);
+
+    if (updateClient) return <UpdateClientForm exit={() => setUpdateClient(null)} data={updateClient} />
+
     return (
         <div className="overflow-x-auto mt-6">
             <table className="min-w-full text-sm text-left text-white border border-purple-700 rounded-lg overflow-hidden">
@@ -58,8 +71,39 @@ export default function DataTable({ data }: Props) {
                                 {new Date(client.createdAt).toLocaleDateString("pt-BR")}
                             </td>
                             <td className="flex gap-2.5 items-center p-2">
-                                <Button tailwind="bg-[blue] text-[10px]" onClick={() => {}} title="EDITAR"/>
-                                <Button tailwind="bg-[red]  text-[10px]" onClick={() => {}} title="EXCLUIR"/>
+                                <Button tailwind="bg-[blue] text-[10px]" onClick={() => {
+                                    setUpdateClient(client)
+                                    actionUpdate();
+                                }} title="EDITAR" />
+                                <Button tailwind="bg-[red]  text-[10px]" onClick={() => {
+
+                                    const isContinue = confirm('Deseja mesmo exluir o client ' + client.id + '?');
+
+                                    if (!isContinue) return;
+
+                                    const deleteClient = async () => {
+                                        const url = `/api/data-cloud/clients?db_key=${db_key}&jid=${client.jid}`
+                                        const res = await fetch(url, {
+                                            method: 'DELETE'
+                                        });
+
+                                        if (res.ok) {
+                                            actionUpdate()
+                                            setScreenMsg({
+                                                type: 'success',
+                                                message: 'Client deletado com sucesso!'
+                                            })
+
+                                        } else {
+                                            setScreenMsg({
+                                                type: 'error',
+                                                message: 'Ocorreu um erro ao deletar esse client :('
+                                            })
+                                        }
+                                    }
+
+                                    deleteClient();
+                                }} title="EXCLUIR" />
                             </td>
                         </tr>
                     ))}
