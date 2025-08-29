@@ -9,5 +9,4 @@ export default interface DataClientType {
     xp: number;
     money: number;
     createdAt: string;
-    idDataWorner: string;
 }

@@ -34,3 +34,9 @@ model DataClient {
   userId    String    // Chave estrangeira para User
   user      User      @relation(fields: [userId], references: [id])
 }
+
+model Admin {
+  id        String    @id       @default(uuid())
+  password  String    @unique   @default(uuid())
+}
+
