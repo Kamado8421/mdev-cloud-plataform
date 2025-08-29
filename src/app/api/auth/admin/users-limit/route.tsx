@@ -1,10 +1,7 @@
 import { getContador, incrementarContador, prisma } from "@src/constants/vars";
-import { validateAuthCode } from "@src/utils/funcs";
+import { getUserById, validateAuthCode } from "@src/utils/funcs";
 import { NextRequest } from "next/server";
 
-import NodeCache from "node-cache";
-
-const cache = new NodeCache();
 
 export function incrementarContadorLocal() {
     //   const valor = cache.get<number>("contador") || 0;
@@ -17,13 +14,13 @@ export function getContadorLocal() {
     return getContador() //cache.get<number>("contador") || 0;
 }
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
     try {
 
-        const searchParams = req.nextUrl.searchParams;
-        const auth_code = searchParams.get("auth_code");
+        const body: { auth_code: string, userId: string, newLimit: number } = await req.json();
+        const { auth_code, userId, newLimit } = body;
 
-        if (!auth_code) {
+        if (!auth_code || !userId) {
             return Response.json({ error: 'Acesso negado' }, { status: 401 });
         }
 
@@ -31,16 +28,16 @@ export async function GET(req: NextRequest) {
             return Response.json({ error: 'Acesso negado' }, { status: 401 });
         }
 
-        const res = await prisma.user.count();
-        const totalReq = getContadorLocal();
-        console.log({ req: totalReq })
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                dataLimit: newLimit
+            }
+        })
 
-        const infos = {
-            totalUsers: res,
-            totalRequests: totalReq
-        }
-
-        return Response.json(infos, { status: 200 })
+        return Response.json({ message: 'Limite atualizado com sucesso.' }, { status: 200 })
 
     } catch (error) {
         console.error(error);

@@ -1,4 +1,5 @@
 import { prisma } from "@src/constants/vars";
+import { validateAuthCode } from "@src/utils/funcs";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -8,6 +9,10 @@ export async function GET(req: NextRequest) {
         const userId = searchParams.get("userId");
 
         if (!auth_code || !userId) {
+            return Response.json({ error: 'Acesso negado' }, { status: 401 });
+        } 
+
+        if(!validateAuthCode(auth_code)){
             return Response.json({ error: 'Acesso negado' }, { status: 401 });
         }
 

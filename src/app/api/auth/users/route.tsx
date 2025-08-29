@@ -8,8 +8,6 @@ export async function POST(req: NextRequest) {
     try {
         const { id, auth_code }: { id: string; auth_code: string } = await req.json();
 
-        console.log({auth_code})
-
         if (!validateAuthCode(auth_code)) {
             return Response.json({ error: "Autorização negada" }, { status: 401 });
         }

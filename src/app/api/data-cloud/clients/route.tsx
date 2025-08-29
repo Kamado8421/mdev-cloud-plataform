@@ -1,6 +1,7 @@
 import { prisma } from "@src/constants/vars";
 import { getDataClientByJid, validateDBKey } from "@src/utils/funcs";
 import { NextRequest } from "next/server";
+import { incrementarContadorLocal } from "../../auth/admin/infos/route";
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,6 +30,7 @@ export async function GET(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const dataFormated = data.map(({ userId, ...rest }) => rest);
 
+    incrementarContadorLocal();
     return Response.json(dataFormated, { status: 200 });
   } catch (error) {
     console.error(error);
@@ -54,6 +56,13 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'jid Obrigatório' }, { status: 401 });
     }
 
+    const user = await prisma.user.findUnique({ where: { id: db_key } });
+    const totalclients = await prisma.dataClient.count({ where: { userId: db_key } });
+
+    if (user) {
+      if (totalclients >= user.dataLimit) return Response.json({ error: 'Limite de clientes atingido' }, { status: 403 });
+    }
+
     const clientExists = await getDataClientByJid(jid);
     if (clientExists) {
       return Response.json({
@@ -70,7 +79,8 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    return Response.json({...data, userId: undefined}, { status: 201 });
+    incrementarContadorLocal();
+    return Response.json({ ...data, userId: undefined }, { status: 201 });
   } catch (error) {
     console.error(error);
     return Response.json({ error: 'Erro interno no servidor' }, { status: 500 });
@@ -136,7 +146,7 @@ export async function PUT(req: NextRequest) {
         const value = updates[key as keyof UpdateKeysBodyProps['updates']];
 
         switch (key) {
-          case "isPremium":     
+          case "isPremium":
             data[key] =
               typeof value === 'string'
                 ? value.toLowerCase() === 'true'
@@ -180,11 +190,12 @@ export async function PUT(req: NextRequest) {
       data,
     });
 
+    incrementarContadorLocal();
     return Response.json(
       {
         success: true,
         message: "Cliente atualizado com sucesso.",
-        client: {...updated, userId: undefined},
+        client: { ...updated, userId: undefined },
       },
       { status: 200 }
     );
@@ -222,6 +233,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     await prisma.dataClient.delete({ where: { jid } });
+    incrementarContadorLocal();
     return Response.json({ message: 'Cliente deletado com sucesso' }, { status: 200 });
   } catch (error) {
     console.error(error);
