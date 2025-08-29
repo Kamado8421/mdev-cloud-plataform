@@ -130,6 +130,16 @@ export default function AdminPage() {
         })
 
         if (!res.ok) {
+
+            if (res.status === 404) {
+                setIsLoading(false);
+                setScreenMsg({
+                    type: 'error',
+                    message: 'Usuário não encontrado.'
+                })
+                return;
+            }
+
             setIsLoading(false);
             setScreenMsg({
                 type: 'error',
@@ -144,6 +154,9 @@ export default function AdminPage() {
             type: 'success',
             message: 'Limite alterado com sucesso.'
         })
+
+        setUserIdLimit('');
+        setLimit(0);
     }
 
     return (
@@ -175,6 +188,7 @@ export default function AdminPage() {
                     <input
                         type="number"
                         name="newLimit"
+                        value={limit}
                         className="w-full p-2.5 rounded-md bg-[#2c3e73] text-white my-2"
                         placeholder="Novo limite de requisições"
                         onChange={e => setLimit(Number(e.target.value))}

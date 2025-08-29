@@ -28,6 +28,12 @@ export async function POST(req: NextRequest) {
             return Response.json({ error: 'Acesso negado' }, { status: 401 });
         }
 
+        const user = await getUserById(userId);
+
+        if(!user){
+            return Response.json({ error: 'Usuário não encontrado' }, { status: 404 });
+        }
+
         await prisma.user.update({
             where: {
                 id: userId
